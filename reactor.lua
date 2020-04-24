@@ -1,5 +1,7 @@
 --Made by Avenger#1818
 --Reactor OS with grafical interface
+--License: MIT
+--Version: Alpha .2
 
 --Возможности:
 --  Остановить реактор при перегреве;
@@ -68,7 +70,7 @@ local w, h = gpu.getResolution()
 require("term").clear()
 
 function round(num)
-  return math.floor(x*100)/100
+  return math.floor(num*100)/100
 end
  
 function drawScreen() --Рисуем линии
@@ -88,17 +90,16 @@ function redstoneChange(st) --Во всех сторонах ставим зна
 end
  
 function update() --Обновление экрана
-  drawScreen() --Рисуем линии
   if 100/(reactor.getMaxHeat()/reactor.getHeat()) >= 50 then
     redstoneChange(0)
     require("computer").beep(_FreqOfSoundOfOverHeating, _FreqOfUpdate/2)
     _fg = gpu.getForeground()
     gpu.setForeground(0xff0000)
-    gpu.set(3, 7, "!!! - "..lang["overheating"].." - !!!")
+    gpu.set(3, 8, "!!! - "..lang["overheating"].." - !!!")
     gpu.setForeground(_fg)
   else
     redstoneChange(1)
-    gpu.fill(3, 7, 3, h - 1, " ")
+    gpu.fill(3, 8, 3, h - 1, " ")
   end
  
   if reactor.producesEnergy() then
@@ -106,10 +107,11 @@ function update() --Обновление экрана
   else
     gpu.set(3, 3, lang["reactor2"])
   end
-  gpu.fill(3, 4, w-1, h-1, " ")
-  gpu.set(3, 4, lang["Cheat"]..tostring(round(100/(reactor.getMaxHeat()/reactor.getHeat()))).."%")
-  gpu.set(3, 5, lang["OE"]..tostring(reactor.getReactorEUOutput()))
-  gpu.set(3, 6, lang["MFSU"]..tostring(round(100/(storage.getCapacity()/storage.getEnergy()))).."%")
+  gpu.set(3, 4, lang["Cheat"]..tostring(round(100/(reactor.getMaxHeat()/reactor.getHeat()))).."%        ")
+  gpu.fill(3, 5, 13, 5, "░")
+  gpu.fill(3, 5, 3+math.floor(10/(reactor.getMaxHeat()/reactor.getHeat())), 5, "█")
+  gpu.set(3, 6, lang["OE"]..tostring(reactor.getReactorEUOutput()).."        ")
+  gpu.set(3, 7, lang["MFSU"]..tostring(round(100/(storage.getCapacity()/storage.getEnergy()))).."%        ")
 end
  
 function exit(...)
@@ -120,6 +122,7 @@ end
  
 e.listen("touch", exit)
 if error == "" then
+  drawScreen()
   while true do
     update()
     os.sleep(_FreqOfUpdate)
